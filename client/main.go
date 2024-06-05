@@ -19,7 +19,10 @@ func main() {
 		logger.Log(lgr.Info, "bomba")
 	})
 
-	client.SendData("execute", []byte("Hello from client"))
+	client.OnConnect(func() {
+		client.Token = "test"
+		client.SendData("execute", []byte("Hello from client"))
+	})
 
 	client.Listen()
 }
