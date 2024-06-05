@@ -20,7 +20,6 @@ func main() {
 	})
 
 	client.OnConnect(func() {
-		client.Token = "test"
 		client.SendData("execute", []byte("Hello from client"))
 	})
 

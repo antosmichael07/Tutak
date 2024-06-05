@@ -32,3 +32,9 @@ github.com/antosmichael07/Go-TCP-Connection v1.18.0 h1:Y6kFa9D/KvSlMNR0Mva5g8Gsh
 github.com/antosmichael07/Go-TCP-Connection v1.18.0/go.mod h1:Qz6ExQkdgnIF8awpnW9ZOGzCr7tBpA32SZN8MxGFo1A=
 github.com/antosmichael07/Go-TCP-Connection v1.19.0 h1:SwBnGbBGIXRAV78croPdotLMN/dxFfLLN17qna6Mjfo=
 github.com/antosmichael07/Go-TCP-Connection v1.19.0/go.mod h1:Qz6ExQkdgnIF8awpnW9ZOGzCr7tBpA32SZN8MxGFo1A=
+github.com/antosmichael07/Go-TCP-Connection v1.20.0 h1:L5dn+ndgdh43ciiKe008dL3ha9kkGMpSJ74YFwYGdpo=
+github.com/antosmichael07/Go-TCP-Connection v1.20.0/go.mod h1:Qz6ExQkdgnIF8awpnW9ZOGzCr7tBpA32SZN8MxGFo1A=
+github.com/antosmichael07/Go-TCP-Connection v1.22.0 h1:9viYRhBYhro9zrD7INgQ039g1j87E/jQaocknGN1IoI=
+github.com/antosmichael07/Go-TCP-Connection v1.22.0/go.mod h1:Qz6ExQkdgnIF8awpnW9ZOGzCr7tBpA32SZN8MxGFo1A=
+github.com/antosmichael07/Go-TCP-Connection v1.23.0 h1:3gknTMzsZ4kDK5QJIn79yG+st4UNxvtzWLf+7cLTRMw=
+github.com/antosmichael07/Go-TCP-Connection v1.23.0/go.mod h1:Qz6ExQkdgnIF8awpnW9ZOGzCr7tBpA32SZN8MxGFo1A=

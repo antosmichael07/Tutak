@@ -16,7 +16,7 @@ func main() {
 	server.On("execute", func(data []byte, conn net.Conn) {
 		server.SendData(conn, "test", []byte("Hello from server"))
 		time.Sleep(3 * time.Second)
-		server.SendData(conn, "test2", []byte("Hello from server"))
+		server.SendDataToAll("test2", []byte("Hello from server"))
 	})
 
 	server.Start()
