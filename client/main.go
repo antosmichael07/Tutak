@@ -11,15 +11,15 @@ func main() {
 	client := tcp.NewClient("localhost:8080")
 	client.Connect()
 
-	client.On("test", func(data string) {
+	client.On("test", func(data []byte) {
 		logger.Log(lgr.Info, "wow")
 	})
 
-	client.On("test2", func(data string) {
+	client.On("test2", func(data []byte) {
 		logger.Log(lgr.Info, "bomba")
 	})
 
-	client.SendData("execute", "Hello from client")
+	client.SendData("execute", []byte("Hello from client"))
 
 	client.Listen()
 }
