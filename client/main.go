@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"time"
 
 	lgr "github.com/antosmichael07/Go-Logger"
 	tcp "github.com/antosmichael07/Go-TCP-Connection"
-	rl_fp "github.com/antosmichael07/Raylib-3D-Custom-First-Person"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -13,7 +13,7 @@ var logger = lgr.NewLogger("Tutak")
 
 type Player struct {
 	Name   string
-	Player rl_fp.Player
+	Player PlayerFP
 }
 
 type PlayerPackage struct {
@@ -28,9 +28,9 @@ func main() {
 	name := "Test"
 	players := []Player{}
 	bounding_boxes := []rl.BoundingBox{}
-	trigger_boxes := []rl_fp.TriggerBox{}
-	interractable_boxes := []rl_fp.InteractableBox{}
-	my_player := rl_fp.Player{}
+	trigger_boxes := []TriggerBox{}
+	interractable_boxes := []InteractableBox{}
+	my_player := PlayerFP{}
 
 	client.On("players", func(data []byte) {
 		player_package := PlayerPackage{}
@@ -38,7 +38,7 @@ func main() {
 		if err != nil {
 			logger.Log(lgr.Error, "Error unmarshalling players data: %s", err)
 		}
-		rlfp := rl_fp.Player{}
+		rlfp := PlayerFP{}
 		err = json.Unmarshal(player_package.RFLP, &rlfp)
 		if err != nil {
 			logger.Log(lgr.Error, "Error unmarshalling rlfp data: %s", err)
@@ -67,6 +67,8 @@ func main() {
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(current_monitor)))
 	defer rl.CloseWindow()
 
+	time.Sleep(1 * time.Second)
+
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 
@@ -88,6 +90,7 @@ func main() {
 		rl.EndMode3D()
 
 		rl.DrawFPS(10, 10)
+		players[0].Player.UpdatePlayer(bounding_boxes, trigger_boxes, interractable_boxes, client)
 
 		rl.EndDrawing()
 	}
