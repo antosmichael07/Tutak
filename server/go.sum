@@ -1,7 +1,5 @@
 github.com/antosmichael07/Go-Logger v1.16.0 h1:LOKCSU/lXlGEBSbJp9YqqBbrI2wWDl47fyfyRflvN04=
 github.com/antosmichael07/Go-Logger v1.16.0/go.mod h1:v+v085J0A+Cdi76SanfvKA10216jy45azC6VM+sh16Q=
-github.com/antosmichael07/Go-TCP-Connection v1.35.0 h1:6mXQs65iCuqfkqo+Veg0gHj+pZxYH8FtAS7UoxVTiXI=
-github.com/antosmichael07/Go-TCP-Connection v1.35.0/go.mod h1:lvLHj0xS+BT6UGDsY2t6RVg1wTzpl63p+MwJe2oJUYA=
 github.com/antosmichael07/Go-TCP-Connection v1.36.0 h1:YPL3VIrtk59saNt2P0WTf4mwvsxziWsur9/t96ZN+CI=
 github.com/antosmichael07/Go-TCP-Connection v1.36.0/go.mod h1:lvLHj0xS+BT6UGDsY2t6RVg1wTzpl63p+MwJe2oJUYA=
 github.com/ebitengine/purego v0.7.1 h1:6/55d26lG3o9VCZX8lping+bZcmShseiqlh2bnUDiPA=
