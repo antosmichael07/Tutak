@@ -51,12 +51,7 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string) 
 			player.Position.X = position.X
 			player.Position.Y = position.Y
 			player.Position.Z = position.Z
-			player.Camera.Position = rl.NewVector3(player.Position.X, player.Position.Y+(player.Scale.Y/2), player.Position.Z)
-			player.Camera.Target = rl.NewVector3(
-				player.Camera.Position.X-float32(math.Cos(float64(player.Rotation.X)))*float32(math.Cos(float64(player.Rotation.Y))),
-				player.Camera.Position.Y+float32(math.Sin(float64(player.Rotation.Y)))+(player.Scale.Y/2),
-				player.Camera.Position.Z-float32(math.Sin(float64(player.Rotation.X)))*float32(math.Cos(float64(player.Rotation.Y))),
-			)
+			player.UpdateCameraFirstPerson()
 		}
 	})
 }
@@ -66,7 +61,7 @@ func player_updates(client *tcp.Client, player *rlfp.Player) {
 }
 
 func input_player(client *tcp.Client, player *rlfp.Player) {
-	if rl.IsKeyDown(player.Controls.Forward) || rl.IsKeyDown(player.Controls.Backward) || rl.IsKeyDown(player.Controls.Left) || rl.IsKeyDown(player.Controls.Right) || rl.IsKeyDown(player.Controls.Jump) || rl.IsKeyDown(player.Controls.Crouch) || rl.IsKeyDown(player.Controls.Sprint) || rl.IsKeyDown(player.Controls.Interact) {
+	if rl.IsKeyDown(player.Controls.Forward) || rl.IsKeyDown(player.Controls.Backward) || rl.IsKeyDown(player.Controls.Left) || rl.IsKeyDown(player.Controls.Right) || rl.IsKeyDown(player.Controls.Jump) || rl.IsKeyDown(player.Controls.Crouch) || rl.IsKeyDown(player.Controls.Interact) {
 		inputs := Input{}
 		if rl.IsKeyDown(player.Controls.Forward) {
 			inputs.Forward = true
