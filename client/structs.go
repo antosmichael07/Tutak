@@ -2,11 +2,13 @@ package main
 
 import (
 	rlfp "github.com/antosmichael07/Raylib-3D-Custom-First-Person"
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Player struct {
-	Name string
-	RLFP rlfp.Player
+	Name         string
+	RLFP         rlfp.Player
+	LastRotation rl.Vector2
 }
 
 type Input struct {
@@ -20,9 +22,15 @@ type Input struct {
 	Interact bool
 }
 
-type PlayerPosition struct {
+type PlayerPositionToSend struct {
 	Name string
 	X    float32
 	Y    float32
 	Z    float32
+}
+
+type PlayerRotationToSend struct {
+	Name string
+	X    float32
+	Y    float32
 }

@@ -8,7 +8,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func init_player_events(server *tcp.Server, players *[]Player, collision_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interractable_boxes []InteractableBox) {
+func init_player_events(server *tcp.Server, players *[]Player, collision_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interactable_boxes []InteractableBox) {
 	server.On("new-player", func(data []byte, conn tcp.Connection) {
 		new_player := Player{
 			Token: conn.Token,
@@ -28,7 +28,7 @@ func init_player_events(server *tcp.Server, players *[]Player, collision_boxes [
 		server.SendData(conn.Connection, "starter-data", to_send)
 	})
 
-	player_updates(server, players, collision_boxes, trigger_boxes, interractable_boxes)
+	player_updates(server, players, collision_boxes, trigger_boxes, interactable_boxes)
 
 	server.OnDisconnect(func(conn tcp.Connection) {
 		for i := range *players {
@@ -41,7 +41,7 @@ func init_player_events(server *tcp.Server, players *[]Player, collision_boxes [
 	})
 }
 
-func player_updates(server *tcp.Server, players *[]Player, collision_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interractable_boxes []InteractableBox) {
+func player_updates(server *tcp.Server, players *[]Player, collision_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interactable_boxes []InteractableBox) {
 	server.On("input", func(data []byte, conn tcp.Connection) {
 		for i := range *players {
 			if (*players)[i].Token == conn.Token {
@@ -51,9 +51,9 @@ func player_updates(server *tcp.Server, players *[]Player, collision_boxes []rl.
 					return
 				}
 
-				(*players)[i].RLFP.UpdatePlayer(collision_boxes, trigger_boxes, interractable_boxes)
+				(*players)[i].RLFP.UpdatePlayer(collision_boxes, trigger_boxes, interactable_boxes)
 
-				position := PlayerPosition{
+				position := PlayerPositionToSend{
 					Name: (*players)[i].Name,
 					X:    (*players)[i].RLFP.Position.X,
 					Y:    (*players)[i].RLFP.Position.Y,
@@ -65,6 +65,34 @@ func player_updates(server *tcp.Server, players *[]Player, collision_boxes []rl.
 					return
 				}
 				server.SendDataToAll("position", to_send)
+				break
+			}
+		}
+	})
+
+	server.On("rotate", func(data []byte, conn tcp.Connection) {
+		for i := range *players {
+			if (*players)[i].Token == conn.Token {
+				err := json.Unmarshal(data, &(*players)[i].RLFP.Rotation)
+				if err != nil {
+					logger.Log(lgr.Error, "Error unmarshalling rotate data: %s", err)
+					return
+				}
+
+				(*players)[i].RLFP.UpdateInteractableBoxes(interactable_boxes)
+				(*players)[i].RLFP.UpdateCameraFirstPerson()
+
+				rotation := PlayerRotationToSend{
+					Name: (*players)[i].Name,
+					X:    (*players)[i].RLFP.Rotation.X,
+					Y:    (*players)[i].RLFP.Rotation.Y,
+				}
+				to_send, err := json.Marshal(rotation)
+				if err != nil {
+					logger.Log(lgr.Error, "Error marshalling rotation data: %s", err)
+					return
+				}
+				server.SendDataToAll("rotation", to_send)
 				break
 			}
 		}

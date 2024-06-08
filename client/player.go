@@ -41,7 +41,7 @@ func init_player_events(client *tcp.Client, name string, player *rlfp.Player, st
 
 func player_update_events(client *tcp.Client, player *rlfp.Player, name string) {
 	client.On("position", func(data []byte) {
-		position := PlayerPosition{}
+		position := PlayerPositionToSend{}
 		err := json.Unmarshal(data, &position)
 		if err != nil {
 			logger.Log(lgr.Error, "Error unmarshalling position data: %s", err)
@@ -51,6 +51,20 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string) 
 			player.Position.X = position.X
 			player.Position.Y = position.Y
 			player.Position.Z = position.Z
+			player.UpdateCameraFirstPerson()
+		}
+	})
+
+	client.On("rotation", func(data []byte) {
+		rotation := PlayerRotationToSend{}
+		err := json.Unmarshal(data, &rotation)
+		if err != nil {
+			logger.Log(lgr.Error, "Error unmarshalling rotation data: %s", err)
+			return
+		}
+		if rotation.Name == name {
+			player.Rotation.X = rotation.X
+			player.Rotation.Y = rotation.Y
 			player.UpdateCameraFirstPerson()
 		}
 	})
@@ -94,5 +108,14 @@ func input_player(client *tcp.Client, player *rlfp.Player) {
 			return
 		}
 		client.SendData("input", to_send)
+	}
+
+	if rl.GetMouseDelta().X != 0 || rl.GetMouseDelta().Y != 0 {
+		to_send, err := json.Marshal(player.Rotation)
+		if err != nil {
+			logger.Log(lgr.Error, "Error marshalling rotate data: %s", err)
+			return
+		}
+		client.SendData("rotate", to_send)
 	}
 }

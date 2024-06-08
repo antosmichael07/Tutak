@@ -2,7 +2,6 @@ package main
 
 import (
 	"math"
-	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -18,7 +17,6 @@ type PlayerFP struct {
 	Gravity           float32
 	JumpPower         float32
 	LastKeyPressed    string
-	LastFrameTime     float32
 	FrameTime         float32
 	InteractRange     float32
 	AlreadyInteracted bool
@@ -86,8 +84,7 @@ func (player *PlayerFP) InitPlayer() {
 	player.Gravity = .0065
 	player.JumpPower = .15
 	player.LastKeyPressed = ""
-	player.LastFrameTime = float32(time.Now().UnixMicro()) * 1000000
-	player.FrameTime = 0.
+	player.FrameTime = 1. / 60.
 	player.InteractRange = 3.
 	player.AlreadyInteracted = false
 	player.StepHeight = .5
@@ -103,8 +100,6 @@ func (player *PlayerFP) InitPlayer() {
 }
 
 func (player *PlayerFP) UpdatePlayer(bounding_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interactable_boxes []InteractableBox) {
-	player.FrameTime = (float32(time.Now().UnixMicro()) * 1000000) - player.LastFrameTime
-	player.LastFrameTime = float32(time.Now().UnixMicro()) * 1000000
 	player.LastKeyPressedPlayer()
 	player.AccelerationPlayer()
 	player.ApplyGravityToPlayer(bounding_boxes)
