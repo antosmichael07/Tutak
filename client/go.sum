@@ -4,6 +4,8 @@ github.com/antosmichael07/Go-TCP-Connection v1.36.0 h1:YPL3VIrtk59saNt2P0WTf4mwv
 github.com/antosmichael07/Go-TCP-Connection v1.36.0/go.mod h1:lvLHj0xS+BT6UGDsY2t6RVg1wTzpl63p+MwJe2oJUYA=
 github.com/antosmichael07/Raylib-3D-Custom-First-Person v1.17.0 h1:+TCNmd6tmRWwGyHKWKTiU+sXP9eE1PocvF5VtEkaE20=
 github.com/antosmichael07/Raylib-3D-Custom-First-Person v1.17.0/go.mod h1:r+P7IoXRxOsOfci4l4e3AsEaZV5kbgr+UehpGb7aCB0=
+github.com/antosmichael07/Raylib-Cube-Image v1.6.0 h1:bjprXZppsiyso3ucY5G4BMbvFGZyNtTxpqmo18lBv/c=
+github.com/antosmichael07/Raylib-Cube-Image v1.6.0/go.mod h1:qbW5m+kJ5ZS/WLkeye6UrqVEbyXVQWecTfwuIo3Rr+I=
 github.com/ebitengine/purego v0.7.1 h1:6/55d26lG3o9VCZX8lping+bZcmShseiqlh2bnUDiPA=
 github.com/ebitengine/purego v0.7.1/go.mod h1:ah1In8AOtksoNK6yk5z1HTJeUkC1Ez4Wk2idgGslMwQ=
 github.com/gen2brain/raylib-go/raylib v0.0.0-20240524074310-a997a44fb95b h1:BOAQWmspPqfnNWsPVD2x5BSXR9LGZhdN3litGjVcWIc=

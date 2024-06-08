@@ -10,7 +10,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func init_player_events(client *tcp.Client, name string, player *rlfp.Player, start_window *bool) {
+func init_player_events(client *tcp.Client, name string, player *rlfp.Player, start_window *bool, players *[]Player) {
 	client.On("starter-data", func(data []byte) {
 		starter_data := rl.Vector3{}
 		err := json.Unmarshal(data, &starter_data)
@@ -31,7 +31,7 @@ func init_player_events(client *tcp.Client, name string, player *rlfp.Player, st
 		*start_window = true
 	})
 
-	player_update_events(client, player, name)
+	player_update_events(client, player, name, players)
 
 	client.OnConnect(func() {
 		logger.Log(lgr.Info, "Connecting to server as a new player: %s", name)
@@ -39,7 +39,7 @@ func init_player_events(client *tcp.Client, name string, player *rlfp.Player, st
 	})
 }
 
-func player_update_events(client *tcp.Client, player *rlfp.Player, name string) {
+func player_update_events(client *tcp.Client, player *rlfp.Player, name string, players *[]Player) {
 	client.On("position", func(data []byte) {
 		position := PlayerPositionToSend{}
 		err := json.Unmarshal(data, &position)
@@ -52,6 +52,27 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string) 
 			player.Position.Y = position.Y
 			player.Position.Z = position.Z
 			player.UpdateCameraFirstPerson()
+		} else {
+			is_exist := false
+			for i := range *players {
+				if (*players)[i].Name == position.Name {
+					(*players)[i].RLFP.Position.X = position.X
+					(*players)[i].RLFP.Position.Y = position.Y
+					(*players)[i].RLFP.Position.Z = position.Z
+					is_exist = true
+				}
+			}
+			if !is_exist {
+				new_player := Player{
+					Name: position.Name,
+					RLFP: rlfp.Player{},
+				}
+				new_player.RLFP.InitPlayer()
+				new_player.RLFP.Position.X = position.X
+				new_player.RLFP.Position.Y = position.Y
+				new_player.RLFP.Position.Z = position.Z
+				*players = append(*players, new_player)
+			}
 		}
 	})
 
@@ -66,6 +87,25 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string) 
 			player.Rotation.X = rotation.X
 			player.Rotation.Y = rotation.Y
 			player.UpdateCameraFirstPerson()
+		} else {
+			is_exist := false
+			for i := range *players {
+				if (*players)[i].Name == rotation.Name {
+					(*players)[i].RLFP.Rotation.X = rotation.X
+					(*players)[i].RLFP.Rotation.Y = rotation.Y
+					is_exist = true
+				}
+			}
+			if !is_exist {
+				new_player := Player{
+					Name: rotation.Name,
+					RLFP: rlfp.Player{},
+				}
+				new_player.RLFP.InitPlayer()
+				new_player.RLFP.Rotation.X = rotation.X
+				new_player.RLFP.Rotation.Y = rotation.Y
+				*players = append(*players, new_player)
+			}
 		}
 	})
 }

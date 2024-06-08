@@ -12,7 +12,7 @@ import (
 var logger = lgr.NewLogger("Tutak")
 
 func main() {
-	client := tcp.NewClient("localhost:8080")
+	client := tcp.NewClient("6.tcp.eu.ngrok.io:12544")
 	client.Connect()
 
 	go func() {
@@ -26,14 +26,14 @@ func main() {
 
 	start_window := false
 	name := "Test"
-	//players := []Player{}
+	players := []Player{}
 	bounding_boxes := []rl.BoundingBox{}
 	trigger_boxes := []rlfp.TriggerBox{}
 	interractable_boxes := []rlfp.InteractableBox{}
 	player := rlfp.Player{}
 	player.InitPlayer()
 
-	init_player_events(&client, name, &player, &start_window)
+	init_player_events(&client, name, &player, &start_window, &players)
 
 	client.Logger.Level = lgr.Warning
 	go client.Listen()
@@ -42,5 +42,5 @@ func main() {
 		time.Sleep(500 * time.Millisecond)
 	}
 	init_window()
-	window_loop(&client, &player, bounding_boxes, trigger_boxes, interractable_boxes)
+	window_loop(&client, &player, bounding_boxes, trigger_boxes, interractable_boxes, &players)
 }

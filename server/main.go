@@ -13,20 +13,9 @@ func main() {
 	server := tcp.NewServer("localhost:8080")
 
 	players := []Player{}
-	bounding_boxes := []rl.BoundingBox{
-		rl.NewBoundingBox(rl.NewVector3(-1.5, -.5, -.5), rl.NewVector3(-.5, .5, .5)),
-		rl.NewBoundingBox(rl.NewVector3(-2.5, 0., -.5), rl.NewVector3(-1.5, 1., .5)),
-		rl.NewBoundingBox(rl.NewVector3(-4.5, .5, -.5), rl.NewVector3(-3.5, 1.5, .5)),
-		rl.NewBoundingBox(rl.NewVector3(-5.5, 1., -.5), rl.NewVector3(-4.5, 2., .5)),
-	}
-	trigger_boxes := []TriggerBox{
-		NewTriggerBox(rl.NewBoundingBox(rl.NewVector3(2.5, 1., -.5), rl.NewVector3(3.5, 2., .5))),
-		NewTriggerBox(rl.NewBoundingBox(rl.NewVector3(4.5, 2.5, -.5), rl.NewVector3(5.5, 3.5, .5))),
-	}
-	interractable_boxes := []InteractableBox{
-		NewInteractableBox(rl.NewBoundingBox(rl.NewVector3(7.5, 0., -.5), rl.NewVector3(8.5, 1., .5))),
-		NewInteractableBox(rl.NewBoundingBox(rl.NewVector3(7.5, .5, -.5), rl.NewVector3(8.5, 1.5, .5))),
-	}
+	bounding_boxes := []rl.BoundingBox{}
+	trigger_boxes := []TriggerBox{}
+	interractable_boxes := []InteractableBox{}
 
 	init_player_events(&server, &players, bounding_boxes, trigger_boxes, interractable_boxes)
 
