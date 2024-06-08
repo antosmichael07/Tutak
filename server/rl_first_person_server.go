@@ -9,7 +9,6 @@ import (
 
 type PlayerFP struct {
 	Speed             Speeds
-	Fovs              FOVs
 	Position          rl.Vector3
 	Rotation          rl.Vector2
 	Scale             rl.Vector3
@@ -19,14 +18,14 @@ type PlayerFP struct {
 	Gravity           float32
 	JumpPower         float32
 	LastKeyPressed    string
+	LastFrameTime     float32
 	FrameTime         float32
 	InteractRange     float32
 	AlreadyInteracted bool
 	StepHeight        float32
 	Stepped           bool
 	Controls          Controls
-	Timer             float32
-	Camera            rl.Camera3D
+	Camera            rl.Camera
 }
 
 type Speeds struct {
@@ -35,11 +34,6 @@ type Speeds struct {
 	Sneak        float32
 	Current      float32
 	Acceleration float32
-}
-
-type FOVs struct {
-	Normal float32
-	Zoom   float32
 }
 
 type Scale struct {
@@ -82,8 +76,6 @@ func (player *PlayerFP) InitPlayer() {
 	player.Speed.Sneak = .05
 	player.Speed.Current = 0.
 	player.Speed.Acceleration = .01
-	player.Fovs.Normal = 70.
-	player.Fovs.Zoom = 20.
 	player.Rotation = rl.NewVector2(0., 0.)
 	player.Position = rl.NewVector3(4., .9, 4.)
 	player.Scale = rl.NewVector3(.8, 1.8, .8)
@@ -94,6 +86,7 @@ func (player *PlayerFP) InitPlayer() {
 	player.Gravity = .0065
 	player.JumpPower = .15
 	player.LastKeyPressed = ""
+	player.LastFrameTime = float32(time.Now().UnixMicro()) * 1000000
 	player.FrameTime = 0.
 	player.InteractRange = 3.
 	player.AlreadyInteracted = false
@@ -107,12 +100,11 @@ func (player *PlayerFP) InitPlayer() {
 	player.Controls.Crouch = false
 	player.Controls.Sprint = false
 	player.Controls.Interact = false
-	player.InitCamera()
 }
 
 func (player *PlayerFP) UpdatePlayer(bounding_boxes []rl.BoundingBox, trigger_boxes []TriggerBox, interactable_boxes []InteractableBox) {
-	player.FrameTime = float32(time.Now().UnixMicro())*1000000 - player.Timer
-	player.Timer = float32(time.Now().UnixMicro()) * 1000000
+	player.FrameTime = (float32(time.Now().UnixMicro()) * 1000000) - player.LastFrameTime
+	player.LastFrameTime = float32(time.Now().UnixMicro()) * 1000000
 	player.LastKeyPressedPlayer()
 	player.AccelerationPlayer()
 	player.ApplyGravityToPlayer(bounding_boxes)
@@ -122,6 +114,7 @@ func (player *PlayerFP) UpdatePlayer(bounding_boxes []rl.BoundingBox, trigger_bo
 		player.CheckTriggerBoxes(trigger_boxes)
 	}
 	player.UpdateInteractableBoxes(interactable_boxes)
+	player.UpdateCameraFirstPerson()
 }
 
 func (player *PlayerFP) LastKeyPressedPlayer() {
@@ -524,6 +517,23 @@ func (player *PlayerFP) InitCamera() {
 		player.Camera.Position.Z-float32(math.Sin(float64(player.Rotation.X)))*float32(math.Cos(float64(player.Rotation.Y))),
 	)
 	player.Camera.Up = rl.NewVector3(0., 1., 0.)
-	player.Camera.Fovy = player.Fovs.Normal
+	player.Camera.Fovy = 70.
 	player.Camera.Projection = rl.CameraPerspective
+}
+
+func (player *PlayerFP) UpdateCameraFirstPerson() {
+	player.MoveCamera()
+	player.RotateCamera()
+}
+
+func (player *PlayerFP) MoveCamera() {
+	player.Camera.Position = rl.NewVector3(player.Position.X, player.Position.Y+(player.Scale.Y/2), player.Position.Z)
+}
+
+func (player *PlayerFP) RotateCamera() {
+	cos_rotation_y := float32(math.Cos(float64(player.Rotation.Y)))
+
+	player.Camera.Target.X = player.Camera.Position.X - float32(math.Cos(float64(player.Rotation.X)))*cos_rotation_y
+	player.Camera.Target.Y = player.Camera.Position.Y + float32(math.Sin(float64(player.Rotation.Y)))
+	player.Camera.Target.Z = player.Camera.Position.Z - float32(math.Sin(float64(player.Rotation.X)))*cos_rotation_y
 }

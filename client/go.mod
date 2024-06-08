@@ -3,9 +3,11 @@ module tutak_client
 go 1.22.2
 
 require (
-	github.com/antosmichael07/Go-Logger v1.14.0
-	github.com/antosmichael07/Go-TCP-Connection v1.27.0
+	github.com/antosmichael07/Go-Logger v1.16.0
+	github.com/antosmichael07/Go-TCP-Connection v1.35.0
 )
+
+require github.com/antosmichael07/Raylib-3D-Custom-First-Person v1.17.0
 
 require (
 	github.com/ebitengine/purego v0.7.1 // indirect
