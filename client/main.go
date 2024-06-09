@@ -12,14 +12,14 @@ import (
 var logger = lgr.NewLogger("Tutak")
 
 func main() {
-	client := tcp.NewClient("6.tcp.eu.ngrok.io:12544")
+	client := tcp.NewClient("localhost:8080")
 	client.Connect()
 
 	go func() {
 		for {
 			if rl.IsKeyDown(rl.KeyF9) {
-				rl.CloseWindow()
 				client.Disconnect()
+				rl.CloseWindow()
 			}
 		}
 	}()
@@ -30,7 +30,8 @@ func main() {
 	bounding_boxes := []rl.BoundingBox{}
 	trigger_boxes := []rlfp.TriggerBox{}
 	interractable_boxes := []rlfp.InteractableBox{}
-	player := rlfp.Player{}
+	player := Player{}
+	player.RLFP.InitPlayer()
 	player.InitPlayer()
 
 	init_player_events(&client, name, &player, &start_window, &players)

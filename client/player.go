@@ -10,7 +10,16 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-func init_player_events(client *tcp.Client, name string, player *rlfp.Player, start_window *bool, players *[]Player) {
+func (player *Player) InitPlayer() {
+	player.RLFP.Speed.Sneak = .04
+	player.RLFP.Speed.Normal = .07
+	player.RLFP.Speed.Sprint = .1
+	player.RLFP.Speed.Acceleration = .0075
+	player.RLFP.Gravity = .0075
+	player.RLFP.JumpPower = .135
+}
+
+func init_player_events(client *tcp.Client, name string, player *Player, start_window *bool, players *[]Player) {
 	client.On("starter-data", func(data []byte) {
 		starter_data := rl.Vector3{}
 		err := json.Unmarshal(data, &starter_data)
@@ -18,17 +27,32 @@ func init_player_events(client *tcp.Client, name string, player *rlfp.Player, st
 			logger.Log(lgr.Error, "Error unmarshalling starter data: %s", err)
 			return
 		}
-		player.Position = starter_data
-		player.Camera.Position = rl.NewVector3(player.Position.X, player.Position.Y+(player.Scale.Y/2), player.Position.Z)
-		player.Camera.Target = rl.NewVector3(
-			player.Camera.Position.X-float32(math.Cos(float64(player.Rotation.X)))*float32(math.Cos(float64(player.Rotation.Y))),
-			player.Camera.Position.Y+float32(math.Sin(float64(player.Rotation.Y)))+(player.Scale.Y/2),
-			player.Camera.Position.Z-float32(math.Sin(float64(player.Rotation.X)))*float32(math.Cos(float64(player.Rotation.Y))),
+		player.RLFP.Position = starter_data
+		player.RLFP.Camera.Position = rl.NewVector3(player.RLFP.Position.X, player.RLFP.Position.Y+(player.RLFP.Scale.Y/2), player.RLFP.Position.Z)
+		player.RLFP.Camera.Target = rl.NewVector3(
+			player.RLFP.Camera.Position.X-float32(math.Cos(float64(player.RLFP.Rotation.X)))*float32(math.Cos(float64(player.RLFP.Rotation.Y))),
+			player.RLFP.Camera.Position.Y+float32(math.Sin(float64(player.RLFP.Rotation.Y)))+(player.RLFP.Scale.Y/2),
+			player.RLFP.Camera.Position.Z-float32(math.Sin(float64(player.RLFP.Rotation.X)))*float32(math.Cos(float64(player.RLFP.Rotation.Y))),
 		)
 
 		logger.Log(lgr.Info, "Starter data received: %v", starter_data)
 
 		*start_window = true
+	})
+
+	client.On("wrong-name", func(data []byte) {
+		logger.Log(lgr.Error, "Name already exists: %s", string(data))
+		client.Disconnect()
+	})
+
+	client.On("disconnected-player", func(data []byte) {
+		player_name := string(data)
+		for i := range *players {
+			if (*players)[i].Name == player_name {
+				*players = append((*players)[:i], (*players)[i+1:]...)
+				break
+			}
+		}
 	})
 
 	player_update_events(client, player, name, players)
@@ -39,7 +63,7 @@ func init_player_events(client *tcp.Client, name string, player *rlfp.Player, st
 	})
 }
 
-func player_update_events(client *tcp.Client, player *rlfp.Player, name string, players *[]Player) {
+func player_update_events(client *tcp.Client, player *Player, name string, players *[]Player) {
 	client.On("position", func(data []byte) {
 		position := PlayerPositionToSend{}
 		err := json.Unmarshal(data, &position)
@@ -48,10 +72,24 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string, 
 			return
 		}
 		if position.Name == name {
-			player.Position.X = position.X
-			player.Position.Y = position.Y
-			player.Position.Z = position.Z
-			player.UpdateCameraFirstPerson()
+			if player.RLFP.Position.X+.3 < position.X || player.RLFP.Position.X-.3 > position.X || player.RLFP.Position.Y+.3 < position.Y || player.RLFP.Position.Y-.3 > position.Y || player.RLFP.Position.Z+.3 < position.Z || player.RLFP.Position.Z-.3 > position.Z {
+				player.RLFP.Position.X = position.X
+				player.RLFP.Position.Y = position.Y
+				player.RLFP.Position.Z = position.Z
+				player.RLFP.UpdateCameraFirstPerson()
+			}
+			offset_position := PlayerPositionToSend{
+				Name: name,
+				X:    player.RLFP.Position.X,
+				Y:    player.RLFP.Position.Y,
+				Z:    player.RLFP.Position.Z,
+			}
+			to_send, err := json.Marshal(offset_position)
+			if err != nil {
+				logger.Log(lgr.Error, "Error marshalling offset data: %s", err)
+				return
+			}
+			client.SendData("offset-position", to_send)
 		} else {
 			is_exist := false
 			for i := range *players {
@@ -83,11 +121,7 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string, 
 			logger.Log(lgr.Error, "Error unmarshalling rotation data: %s", err)
 			return
 		}
-		if rotation.Name == name {
-			player.Rotation.X = rotation.X
-			player.Rotation.Y = rotation.Y
-			player.UpdateCameraFirstPerson()
-		} else {
+		if rotation.Name != name {
 			is_exist := false
 			for i := range *players {
 				if (*players)[i].Name == rotation.Name {
@@ -110,37 +144,39 @@ func player_update_events(client *tcp.Client, player *rlfp.Player, name string, 
 	})
 }
 
-func player_updates(client *tcp.Client, player *rlfp.Player) {
+func player_updates(client *tcp.Client, player *Player) {
 	input_player(client, player)
 }
 
-func input_player(client *tcp.Client, player *rlfp.Player) {
-	if rl.IsKeyDown(player.Controls.Forward) || rl.IsKeyDown(player.Controls.Backward) || rl.IsKeyDown(player.Controls.Left) || rl.IsKeyDown(player.Controls.Right) || rl.IsKeyDown(player.Controls.Jump) || rl.IsKeyDown(player.Controls.Crouch) || rl.IsKeyDown(player.Controls.Interact) {
-		inputs := Input{}
-		if rl.IsKeyDown(player.Controls.Forward) {
-			inputs.Forward = true
-		}
-		if rl.IsKeyDown(player.Controls.Backward) {
-			inputs.Backward = true
-		}
-		if rl.IsKeyDown(player.Controls.Left) {
-			inputs.Left = true
-		}
-		if rl.IsKeyDown(player.Controls.Right) {
-			inputs.Right = true
-		}
-		if rl.IsKeyDown(player.Controls.Jump) {
-			inputs.Jump = true
-		}
-		if rl.IsKeyDown(player.Controls.Crouch) {
-			inputs.Crouch = true
-		}
-		if rl.IsKeyDown(player.Controls.Sprint) {
-			inputs.Sprint = true
-		}
-		if rl.IsKeyDown(player.Controls.Interact) {
-			inputs.Interact = true
-		}
+func input_player(client *tcp.Client, player *Player) {
+	inputs := Input{}
+	if rl.IsKeyDown(player.RLFP.Controls.Forward) {
+		inputs.Forward = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Backward) {
+		inputs.Backward = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Left) {
+		inputs.Left = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Right) {
+		inputs.Right = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Jump) {
+		inputs.Jump = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Crouch) {
+		inputs.Crouch = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Sprint) {
+		inputs.Sprint = true
+	}
+	if rl.IsKeyDown(player.RLFP.Controls.Interact) {
+		inputs.Interact = true
+	}
+
+	if player.LastKeysPressed != inputs {
+		player.LastKeysPressed = inputs
 
 		to_send, err := json.Marshal(inputs)
 		if err != nil {
@@ -150,12 +186,13 @@ func input_player(client *tcp.Client, player *rlfp.Player) {
 		client.SendData("input", to_send)
 	}
 
-	if rl.GetMouseDelta().X != 0 || rl.GetMouseDelta().Y != 0 {
-		to_send, err := json.Marshal(player.Rotation)
+	if player.LastRotation != player.RLFP.Rotation {
+		to_send, err := json.Marshal(player.RLFP.Rotation)
 		if err != nil {
 			logger.Log(lgr.Error, "Error marshalling rotate data: %s", err)
 			return
 		}
+		player.LastRotation = player.RLFP.Rotation
 		client.SendData("rotate", to_send)
 	}
 }

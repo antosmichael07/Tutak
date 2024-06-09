@@ -6,9 +6,10 @@ import (
 )
 
 type Player struct {
-	Name         string
-	RLFP         rlfp.Player
-	LastRotation rl.Vector2
+	Name            string
+	RLFP            rlfp.Player
+	LastRotation    rl.Vector2
+	LastKeysPressed Input
 }
 
 type Input struct {

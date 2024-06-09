@@ -16,7 +16,7 @@ func init_window() {
 	rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(current_monitor)))
 }
 
-func window_loop(client *tcp.Client, player *rlfp.Player, bounding_boxes []rl.BoundingBox, trigger_boxes []rlfp.TriggerBox, interractable_boxes []rlfp.InteractableBox, players *[]Player) {
+func window_loop(client *tcp.Client, player *Player, bounding_boxes []rl.BoundingBox, trigger_boxes []rlfp.TriggerBox, interractable_boxes []rlfp.InteractableBox, players *[]Player) {
 	image := rl.LoadImage("image.png")
 	cube := rlci.NewCubeImage(image, rl.NewVector3(0, 0, 0), rl.NewVector3(1, 1, 1), rl.White)
 
@@ -25,7 +25,7 @@ func window_loop(client *tcp.Client, player *rlfp.Player, bounding_boxes []rl.Bo
 
 		rl.ClearBackground(rl.Black)
 
-		rl.BeginMode3D(player.Camera)
+		rl.BeginMode3D(player.RLFP.Camera)
 
 		rl.DrawGrid(20, 1.)
 		for i := range bounding_boxes {
@@ -40,16 +40,14 @@ func window_loop(client *tcp.Client, player *rlfp.Player, bounding_boxes []rl.Bo
 
 		for i := range *players {
 			cube.Position = rl.NewVector3((*players)[i].RLFP.Position.X, (*players)[i].RLFP.Position.Y, (*players)[i].RLFP.Position.Z)
-			cube.RotationAngle = (*players)[i].RLFP.Rotation.X
+			cube.RotationAngle = (*players)[i].RLFP.Rotation.X * 180 / rl.Pi
 			cube.DrawCubeImage()
 		}
 
 		rl.EndMode3D()
 
 		rl.DrawFPS(10, 10)
-		position := rl.NewVector3(player.Position.X, player.Position.Y, player.Position.Z)
-		player.UpdatePlayer(bounding_boxes, trigger_boxes, interractable_boxes)
-		player.Position = rl.NewVector3(position.X, position.Y, position.Z)
+		player.RLFP.UpdatePlayer(bounding_boxes, trigger_boxes, interractable_boxes)
 		player_updates(client, player)
 
 		rl.EndDrawing()

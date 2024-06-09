@@ -17,7 +17,6 @@ type PlayerFP struct {
 	Gravity           float32
 	JumpPower         float32
 	LastKeyPressed    string
-	FrameTime         float32
 	InteractRange     float32
 	AlreadyInteracted bool
 	StepHeight        float32
@@ -69,11 +68,11 @@ type InteractableBox struct {
 }
 
 func (player *PlayerFP) InitPlayer() {
-	player.Speed.Normal = .1
-	player.Speed.Sprint = .15
-	player.Speed.Sneak = .05
+	player.Speed.Normal = .07
+	player.Speed.Sprint = .1
+	player.Speed.Sneak = .04
 	player.Speed.Current = 0.
-	player.Speed.Acceleration = .01
+	player.Speed.Acceleration = .0075
 	player.Rotation = rl.NewVector2(0., 0.)
 	player.Position = rl.NewVector3(4., .9, 4.)
 	player.Scale = rl.NewVector3(.8, 1.8, .8)
@@ -81,10 +80,9 @@ func (player *PlayerFP) InitPlayer() {
 	player.ConstScale.Crouch = .9
 	player.IsCrouching = false
 	player.YVelocity = 0.
-	player.Gravity = .0065
-	player.JumpPower = .15
+	player.Gravity = .0075
+	player.JumpPower = .135
 	player.LastKeyPressed = ""
-	player.FrameTime = 1. / 60.
 	player.InteractRange = 3.
 	player.AlreadyInteracted = false
 	player.StepHeight = .5
@@ -108,8 +106,6 @@ func (player *PlayerFP) UpdatePlayer(bounding_boxes []rl.BoundingBox, trigger_bo
 		player.MovePlayer(bounding_boxes)
 		player.CheckTriggerBoxes(trigger_boxes)
 	}
-	player.UpdateInteractableBoxes(interactable_boxes)
-	player.UpdateCameraFirstPerson()
 }
 
 func (player *PlayerFP) LastKeyPressedPlayer() {
@@ -128,7 +124,7 @@ func (player *PlayerFP) LastKeyPressedPlayer() {
 }
 
 func (player *PlayerFP) AccelerationPlayer() {
-	final_speed := player.Speed.Acceleration * player.FrameTime * 60
+	final_speed := player.Speed.Acceleration
 
 	if !player.Controls.Forward && !player.Controls.Backward && !player.Controls.Left && !player.Controls.Right {
 		if player.Speed.Current > 0. {
@@ -266,7 +262,7 @@ func (player *PlayerFP) MovePlayer(bounding_boxes []rl.BoundingBox) {
 		player.YVelocity = player.JumpPower
 	}
 
-	player.Position.Y += player.YVelocity * (player.FrameTime * 60)
+	player.Position.Y += player.YVelocity
 
 	if !player.Stepped {
 		player_position_after_moving := player.GetPlayerPositionAfterMoving()
@@ -293,11 +289,9 @@ func (player *PlayerFP) MovePlayer(bounding_boxes []rl.BoundingBox) {
 }
 
 func (player *PlayerFP) ApplyGravityToPlayer(bounding_boxes []rl.BoundingBox) {
-	frame_time := player.FrameTime * 60
+	player.YVelocity -= player.Gravity
 
-	player.YVelocity -= player.Gravity * frame_time
-
-	player_y_after_falling := player.Position.Y + player.YVelocity*frame_time
+	player_y_after_falling := player.Position.Y + player.YVelocity
 	if player.CheckCollisionsYForPlayer(bounding_boxes) || player_y_after_falling-(player.Scale.Y/2) < 0. {
 		player.YVelocity = 0.
 		return
@@ -380,12 +374,10 @@ func (player PlayerFP) CheckCollisionsXZForPlayerWithY(bounding_boxes []rl.Bound
 }
 
 func (player PlayerFP) GetPlayerPositionAfterMoving() rl.Vector3 {
-	frame_time := player.FrameTime * 60
-
 	current_speed := player.Speed.Current
 
 	if player.Speed.Normal == 0. {
-		player.Position.Y += player.YVelocity * frame_time
+		player.Position.Y += player.YVelocity
 	}
 
 	keys_pressed := 0
@@ -405,7 +397,7 @@ func (player PlayerFP) GetPlayerPositionAfterMoving() rl.Vector3 {
 		current_speed = current_speed * .707
 	}
 
-	final_speed := current_speed * frame_time
+	final_speed := current_speed
 
 	speeds := Vector2XZ{
 		float32(math.Cos(float64(player.Rotation.X))) * final_speed,
@@ -440,7 +432,7 @@ func (player PlayerFP) CheckPlayerUncrouch(bounding_boxes []rl.BoundingBox) bool
 }
 
 func (player PlayerFP) CheckIfPlayerOnSurface(bounding_boxes []rl.BoundingBox) bool {
-	player.Position.Y -= player.Gravity * (player.FrameTime * 60)
+	player.Position.Y -= player.Gravity
 	if player.CheckCollisionsYForPlayer(bounding_boxes) || player.Position.Y-(player.Scale.Y/2) < 0. {
 		return true
 	}
