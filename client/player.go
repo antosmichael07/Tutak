@@ -72,7 +72,7 @@ func player_update_events(client *tcp.Client, player *Player, name string, playe
 			return
 		}
 		if position.Name == name {
-			if player.RLFP.Position.X+.3 < position.X || player.RLFP.Position.X-.3 > position.X || player.RLFP.Position.Y+.3 < position.Y || player.RLFP.Position.Y-.3 > position.Y || player.RLFP.Position.Z+.3 < position.Z || player.RLFP.Position.Z-.3 > position.Z {
+			if player.RLFP.Position.X+.5 < position.X || player.RLFP.Position.X-.5 > position.X || player.RLFP.Position.Y+.5 < position.Y || player.RLFP.Position.Y-.5 > position.Y || player.RLFP.Position.Z+.5 < position.Z || player.RLFP.Position.Z-.5 > position.Z {
 				player.RLFP.Position.X = position.X
 				player.RLFP.Position.Y = position.Y
 				player.RLFP.Position.Z = position.Z
