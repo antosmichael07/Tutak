@@ -43,14 +43,16 @@ func init_player_events(server *tcp.Server, players *[]Player, bounding_boxes []
 
 	server.OnDisconnect(func(conn tcp.Connection) {
 		player_name := ""
+		player_token := ""
 		for i := range *players {
 			if (*players)[i].Token == conn.Token {
 				player_name = (*players)[i].Name
+				player_token = (*players)[i].Token
 				break
 			}
 		}
 		for i := range server.Connections {
-			if server.Connections[i].Token != (*players)[i].Token {
+			if server.Connections[i].Token != player_token {
 				server.SendData(server.Connections[i].Connection, "disconnected-player", []byte(player_name))
 			}
 		}

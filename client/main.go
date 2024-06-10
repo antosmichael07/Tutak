@@ -13,6 +13,7 @@ var logger = lgr.NewLogger("Tutak")
 
 func main() {
 	client := tcp.NewClient("localhost:8080")
+	client.Logger.Output.File = true
 	client.Connect()
 
 	go func() {
@@ -25,7 +26,7 @@ func main() {
 	}()
 
 	start_window := false
-	name := "Test"
+	name := "Mispul"
 	players := []Player{}
 	bounding_boxes := []rl.BoundingBox{}
 	trigger_boxes := []rlfp.TriggerBox{}

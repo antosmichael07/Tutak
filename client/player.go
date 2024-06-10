@@ -65,6 +65,7 @@ func init_player_events(client *tcp.Client, name string, player *Player, start_w
 
 func player_update_events(client *tcp.Client, player *Player, name string, players *[]Player) {
 	client.On("position", func(data []byte) {
+		logger.Log(lgr.Info, "Position data received: %s", data)
 		position := PlayerPositionToSend{}
 		err := json.Unmarshal(data, &position)
 		if err != nil {

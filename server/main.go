@@ -13,6 +13,7 @@ var logger = lgr.NewLogger("Tutak")
 func main() {
 	rl.SetTraceLogLevel(rl.LogError)
 	server := tcp.NewServer("localhost:8080")
+	server.Logger.Output.File = true
 
 	players := []Player{}
 	bounding_boxes := []rl.BoundingBox{

@@ -19,6 +19,7 @@ func init_window() {
 func window_loop(client *tcp.Client, player *Player, bounding_boxes []rl.BoundingBox, trigger_boxes []rlfp.TriggerBox, interractable_boxes []rlfp.InteractableBox, players *[]Player) {
 	image := rl.LoadImage("image.png")
 	cube := rlci.NewCubeImage(image, rl.NewVector3(0, 0, 0), rl.NewVector3(1, 1, 1), rl.White)
+	cube.RotationAxis = rl.NewVector3(0., 1., 0.)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()

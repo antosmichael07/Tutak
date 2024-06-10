@@ -1,7 +1,7 @@
 github.com/antosmichael07/Go-Logger v1.16.0 h1:LOKCSU/lXlGEBSbJp9YqqBbrI2wWDl47fyfyRflvN04=
 github.com/antosmichael07/Go-Logger v1.16.0/go.mod h1:v+v085J0A+Cdi76SanfvKA10216jy45azC6VM+sh16Q=
-github.com/antosmichael07/Go-TCP-Connection v1.36.0 h1:YPL3VIrtk59saNt2P0WTf4mwvsxziWsur9/t96ZN+CI=
-github.com/antosmichael07/Go-TCP-Connection v1.36.0/go.mod h1:lvLHj0xS+BT6UGDsY2t6RVg1wTzpl63p+MwJe2oJUYA=
+github.com/antosmichael07/Go-TCP-Connection v1.46.0 h1:b4RJLblpbReQcnwbNtaphSIKT0/vTcq8iOYeczO5o5Q=
+github.com/antosmichael07/Go-TCP-Connection v1.46.0/go.mod h1:lvLHj0xS+BT6UGDsY2t6RVg1wTzpl63p+MwJe2oJUYA=
 github.com/antosmichael07/Raylib-3D-Custom-First-Person v1.17.0 h1:+TCNmd6tmRWwGyHKWKTiU+sXP9eE1PocvF5VtEkaE20=
 github.com/antosmichael07/Raylib-3D-Custom-First-Person v1.17.0/go.mod h1:r+P7IoXRxOsOfci4l4e3AsEaZV5kbgr+UehpGb7aCB0=
 github.com/antosmichael07/Raylib-Cube-Image v1.6.0 h1:bjprXZppsiyso3ucY5G4BMbvFGZyNtTxpqmo18lBv/c=
