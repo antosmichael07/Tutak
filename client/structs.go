@@ -35,3 +35,8 @@ type PlayerRotationToSend struct {
 	X    float32
 	Y    float32
 }
+
+type Block struct {
+	Name string
+	Cube rl.Model
+}
