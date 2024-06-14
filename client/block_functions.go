@@ -21,5 +21,10 @@ func draw_block(model rl.Model, position rl.Vector3) {
 func new_block(name string, image *rl.Image) Block {
 	block_model := new_block_model(image)
 
-	return Block{name, block_model}
+	return Block{name, block_model, false, nil}
+}
+
+func (block *Block) on_interact(fn func()) {
+	block.OnInteract = fn
+	block.Interactable = true
 }

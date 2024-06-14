@@ -37,6 +37,8 @@ type PlayerRotationToSend struct {
 }
 
 type Block struct {
-	Name string
-	Cube rl.Model
+	Name         string
+	Cube         rl.Model
+	Interactable bool
+	OnInteract   func()
 }
