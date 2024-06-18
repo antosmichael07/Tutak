@@ -9,7 +9,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-var logger = lgr.NewLogger("Tutak")
+var logger, _ = lgr.NewLogger("Tutak", "logs", true)
 
 func main() {
 	client := tcp.NewClient("localhost:8080")
